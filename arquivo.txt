@@ -1,0 +1,3 @@
+Relação de Rebeldes aprovados abaixo:
+Nome: 'Gustavo', Idade: '85', Raça: 'Gree'
+Nome: 'hermione', Idade: '854', Raça: 'Gree'
