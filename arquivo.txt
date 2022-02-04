@@ -1,3 +1,3 @@
 Relação de Rebeldes aprovados abaixo:
-Nome: 'Gustavo', Idade: '85', Raça: 'Gree'
-Nome: 'hermione', Idade: '854', Raça: 'Gree'
+Nome: 'Amadeu', Idade: '85', Raça: 'Humano'
+Nome: 'Nelson', Idade: '45', Raça: 'Humano'

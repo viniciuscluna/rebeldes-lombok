@@ -1,13 +1,9 @@
 package luna.vinicius.controller;
 
-import luna.vinicius.model.ICRebelde;
-import luna.vinicius.model.Raca;
-import luna.vinicius.model.Rebelde;
-import luna.vinicius.model.Resultado;
-import luna.vinicius.utils.Helpers;
+import luna.vinicius.model.*;
 
 import java.io.*;
-import java.util.Random;
+import java.util.*;
 
 public class ICController {
     private ICRebelde rebeldes;
@@ -15,7 +11,9 @@ public class ICController {
     public ICController() {
         rebeldes = new ICRebelde();
     }
+
     Random rd = new Random();
+
     public Resultado solicitaInclusaoRebelde(String nome, int idade, Raca raca) {
         if (rd.nextBoolean()) {
             rebeldes.addRebelde(new Rebelde(nome, idade, raca));
@@ -26,21 +24,68 @@ public class ICController {
 
     }
 
-    public String gerarRelacaoRebeldes() throws IOException {
+    public RetornoRelatorio gerarRelacaoRebeldes(OrdemRelatorio ordemRelatorio) throws Exception {
+        var lista = ordenarLista(rebeldes.getRebeldes(), ordemRelatorio);
+        return new RetornoRelatorio(gravarArquivo(lista), gerarListaCompilada(lista));
+    }
 
-        OutputStream os = new FileOutputStream("arquivo.txt");
-        Writer wr = new OutputStreamWriter(os); // criação de um escritor
-        BufferedWriter br = new BufferedWriter(wr); // adiciono a um escritor de buffer
 
-        br.write("Relação de Rebeldes aprovados abaixo:");
-        br.newLine();
-        for (Rebelde rebelde : rebeldes.getRebeldes()) {
-            br.write(rebelde.toString());
-            br.newLine();
+    private String gerarListaCompilada(Rebelde[] rebeldes) {
+        StringBuilder sb = new StringBuilder();
+
+        for (Rebelde rebelde : rebeldes) {
+            sb.append(rebelde.toString() + "\n");
         }
 
-        br.close();
+        return sb.toString();
+    }
 
-        return "Arquivo criado com sucesso, verifique na pasta do projeto";
+    private Rebelde[] ordenarLista(Queue<Rebelde> rebeldes, OrdemRelatorio ordemRelatorio) {
+        var vetor = rebeldes.toArray(Rebelde[]::new);
+        if (ordemRelatorio == OrdemRelatorio.Nenhum) return vetor;
+
+        int tamanho = vetor.length;
+        for (int i = 0; i < tamanho - 1; i++) {
+            for (int j = 0; j < tamanho - 1 - i; j++) {
+                if (checkCondicao(vetor, j, ordemRelatorio)) {
+                    var auxiliar = vetor[j];
+                    vetor[j] = vetor[j + 1];
+                    vetor[j + 1] = auxiliar;
+                }
+            }
+        }
+
+        return vetor;
+    }
+
+    private boolean checkCondicao(Rebelde[] rebeldes, int posicao, OrdemRelatorio ordemRelatorio) {
+        switch (ordemRelatorio) {
+            case Idade:
+                return rebeldes[posicao].getIdade() > rebeldes[posicao + 1].getIdade();
+            case Nome:
+                return rebeldes[posicao].getNome().compareTo(rebeldes[posicao + 1].getNome()) > 0;
+            case Raca:
+            default:
+                return rebeldes[posicao].getRaca().toString().compareTo(rebeldes[posicao + 1].getRaca().toString()) > 0;
+        }
+    }
+
+    private String gravarArquivo(Rebelde[] rebeldes) throws Exception {
+        try {
+            OutputStream os = new FileOutputStream("arquivo.txt");
+            Writer wr = new OutputStreamWriter(os); // criação de um escritor
+            BufferedWriter br = new BufferedWriter(wr); // adiciono a um escritor de buffer
+
+            br.write("Relação de Rebeldes aprovados abaixo:");
+            br.newLine();
+            for (Rebelde rebelde : rebeldes) {
+                br.write(rebelde.toString());
+                br.newLine();
+            }
+            br.close();
+            return "Arquivo criado com sucesso, verifique na pasta do projeto";
+        } catch (Exception ex) {
+            throw new Exception("Erro ao gravar o arquivo, tente novamente");
+        }
     }
 }
