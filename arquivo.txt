@@ -1,3 +1,0 @@
-Relação de Rebeldes aprovados abaixo:
-Nome: 'Amadeu', Idade: '85', Raça: 'Humano'
-Nome: 'Nelson', Idade: '45', Raça: 'Humano'
